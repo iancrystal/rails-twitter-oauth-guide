@@ -1,0 +1,38 @@
+<% if session[:credentials] %>
+<div id="laststatus">
+<p>
+  <b>Last status:</b>
+  <%=h session[:credentials]['status']['text'] %>
+</p>
+<% end %>
+
+<% if session[:access_token] %>
+<% form_tag url_for(:action => 'update_status') do -%>
+<p>
+  <b>What are you doing?</b><br />
+  <%= text_area_tag 'status_message' %>
+</p>
+<div><%= submit_tag 'Post' %></div>
+<% end -%>
+<br>
+<div id="menu">
+<%= link_to_remote "Show Tweets",
+   :url => url_for(:action => 'show_tweets'),
+   :method => :get,
+   :loading => "$('error').innerHTML = '';$('data').innerHTML = 'Loading..';",
+   :update => { :success => "data", :failure => "error" }
+%> 
+|
+<%= link_to_remote "Show Tweeter OAuth API Quickstart Guide",
+   :url => url_for(:action => 'show_guide'),
+   :method => :get,
+   :loading => "$('error').innerHTML = '';$('data').innerHTML = 'Loading..';",
+   :update => { :success => "data", :failure => "error" }
+%> 
+</div>
+<% end %>
+
+<div id="error">
+</div>
+<div id="data">
+</div>

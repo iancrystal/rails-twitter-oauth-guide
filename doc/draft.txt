@@ -1,0 +1,54 @@
+Twitter OAuth quick start guide for Ruby on Rails
+by Ian Crystal
+
+The twitter site supports basic and OAuth authentication. The OAuth technique is more complicated but it is more secure. For example, it protects the content of the request from tampering and reuse (replay attack). There is no need to know the details of the authentication flow to use the API, but if you want to learn the details, http://hueniverse.com/oauth/ is a good place to start.
+
+Here are steps to get started quickly:
+
+- Install oauth gem (gem install oauth)
+
+- register your site at http://dev.twitter.com/apps/new to get the oauth consumer KEY and SECRET.
+  Application Type = Browser 
+  Callback URL = for now enter "http://localhost:3000/demo/callback" (you can override this in your application)
+  Default Access type = Read & Write
+  Use Twitter for login = yes 
+               
+- Go over http://apiwiki.twitter.com/Twitter-API-Documentation. Read the "Getting Started" section and skim through the list of methods just to get an idea of the scope of the API.  
+
+- To use the methods that require authentication you need to create an access token.  The following code creates an access token (It's up to you to add error/exception handling. Also use database based sessions for security and to prevent cookie overflow):
+
+  #The values of CONSUMER_KEY and CONSUMER_SECRET comes from registering your site in the previous step. Put the following code section in config/environment.rb
+  TWITTER_SITE = 'http://api.twitter.com'
+  CONSUMER_KEY = '5ZCzhCKJ0lkUMaqbLfdgrg'
+  CONSUMER_SECRET = 'rXlnp5djPdPI9VxfmwL7WbuUBIbdGgN1Ndcj1Wtn6g'
+  # Of course you can use a different controller and method. When you deploy just change localhost:3000 to your actual site host server 
+  OAUTH_CALLBACK = 'http://localhost:3000/demo/callback'
+  config.action_controller.session_store = :active_record_store
+
+  # Put the following code section in a before_filter method
+  return if session[:access_token]
+  session[:consumer] = OAuth::Consumer.new(CONSUMER_KEY, CONSUMER_SECRET, { :site=> TWITTER_SITE })
+  request_token = session[:consumer].get_request_token
+  session[:request_token] = request_token.token
+  session[:request_token_secret] = request_token.secret
+  # redirect to tweeter login page
+  redirect_to request_token.authorize_url 
+
+  # Define the callback method depending on the OAUTH_CALLBACK value.
+  def callback
+    request_token = OAuth::RequestToken.new(session[:consumer], session[:request_token], session[:request_token_secret])
+    session[:access_token] = request_token.get_access_token( :oauth_verifier => params[:oauth_verifier] )
+    redirect_to url_for(:controller => "demo", :action => "index")
+  end
+
+- to create the session tables:
+  rake db:sessions:migrate
+  rake db:migrate
+
+- Once you have the access token, you can make secure API calls. Examples (it's up to you to add error/exception handling):
+
+  # Twitter REST API Method: account verify_credentials
+  response = session[:access_token].get('/account/verify_credentials.json')
+
+  # Twitter REST API Method: statuses friends_timeline
+  response = session[:access_token].get('/statuses/friends_timeline.json')

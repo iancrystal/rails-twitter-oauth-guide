@@ -1,0 +1,13 @@
+
+
+<div id="currentuser">
+<% if session[:access_token] %>
+You are logged in as <%= session[:credentials]['name'] %>. 
+<%= link_to 'sign-out', url_for(:action => 'signout')  %>
+
+<% else %>
+
+<%= link_to  image_tag( 'Sign-in-with-Twitter-darker.png', { :alt => 'Sign-in With Twitter' } ), url_for(:action => 'signin')  %>
+
+<% end %>
+</div>

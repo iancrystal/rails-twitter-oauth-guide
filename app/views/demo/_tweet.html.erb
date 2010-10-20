@@ -1,0 +1,12 @@
+<hr/>
+<% style = "height:62px;padding-left:52px;background: url(#{ h tweet['user']['profile_image_url']}) no-repeat;" %>
+<div style="<%= style %>">
+<p>
+<%= h tweet['user']['screen_name']  %>, friends: <%= tweet['user']['friends_count'] %>, followers: <%= tweet['user']['followers_count'] %>
+</p>
+<% if tweet['text'] %>
+<p>
+Latest tweet: <%= h tweet['text'] %>
+</p>
+<% end %>
+</div>
