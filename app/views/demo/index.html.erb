@@ -23,6 +23,7 @@
    :update => { :success => "data", :failure => "error" }
 %> 
 |
+<% end %>
 <%= link_to_remote "Show Tweeter OAuth API Quickstart Guide",
    :url => url_for(:action => 'show_guide'),
    :method => :get,
@@ -30,7 +31,6 @@
    :update => { :success => "data", :failure => "error" }
 %> 
 </div>
-<% end %>
 
 <div id="error">
 </div>

@@ -3,7 +3,7 @@ require 'json'
 
 class DemoController < ApplicationController
 
-  before_filter :login_required, :except => [ :callback, :signout, :index ]
+  before_filter :login_required, :except => [ :callback, :signout, :index, :show_guide ]
 
   def callback
     request_token = OAuth::RequestToken.new(session[:consumer], session[:request_token], session[:request_token_secret])
